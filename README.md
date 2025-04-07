@@ -1,4 +1,4 @@
-# solid-principles
+# SOLID-principles
 
 Los principios SOLID son cinco reglas **para escribir código limpio y bien estructurado** enfocado en la programación orientada a objetos. 
 Su objetivo es hacer que el software sea más fácil de entender, mantener y escalar. 
@@ -29,7 +29,34 @@ Este es el nivel más básico👶:
 
 >👶Y esos objetos pueden hacer cosas.
 
-pero ¿ Qué pasa cuando tengo más de una clase? que pasa cuando tengo muchas acciones, a medida que mi code crece el programa se vuelve más y más grande, es importante organizarlo bien y tener un criterio del tamaño y las acciones de mis clases y la interacción de unas con otras, como esto es algo que muchas personas necesitan hacer,se crearón unos principios, 'los principios de la programación orientada a objetos' 
+
+Ahora bien… ¿qué pasa cuando tengo más de una clase? **¿Y si tengo muchas acciones, muchas responsabilidades?** 
+
+A medida que mi código crece, el programa se vuelve más complejo. Por eso es tan importante tener un criterio claro para organizarlo bien:
+
+¿Qué tan grande debe ser una clase? ¿Cuántas cosas debería hacer?¿Cómo deberían interactuar entre ellas?
+
+Como esto es algo que muchas personas del mundo del desarrollo enfrentan, se definieron principios a seguir para ayudar a tomar buenas decisiones.
+````
+💡Personas viendo problemas y buscando soluciones💡
+````
+
+Así nacieron los principios de la programación orientada a objetos: los principios SOLID.
+
+> 🔴✋ _Ojo: no hay que confundirlos con los PILARES de la programación orientada a objetos (abstracción, encapsulamiento, herencia y polimorfismo), que son los conceptos base de cómo funciona este paradigma._
+<br/>
+
+`IMPORTANTE`👇
+---
+
+---
+`PILARES VS PRINCIPIOS`
+>Los pilares son el **"cómo funciona la POO"**
+>
+>SOLID es el **"cómo escribir buen código con POO".**
+---
+
+
 
 
 ## **`S`** - **Principio de Responsabilidad Única (Single Responsibility Principle - SRP)**.
