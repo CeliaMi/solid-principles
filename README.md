@@ -154,5 +154,122 @@ la clase BookServices 📁 services/BookService.ts
 la clase BookPrinter 📁 utils/BookPrinter.ts
 
 
+## **`O`** - **Principio de Abierto/Cerrado**.
+Abierto para extensión, cerrado para modificación
+¿Qué significa esto? Significa que tu código debería poder extenderse sin necesidad de modificar el existente.
+Es decir: si mañana necesitás nuevas funcionalidades, deberías poder agregarlas sin tener que romper o reescribir lo que ya funciona.
+Sobre el ejemplo anterior de nuestro api de libros: ¿Qué pasa si mañana quiero exportar los libros no solo como PDF sino también como HTML o EPUB?
+
+`❌Atención❌: Ejemplo SIN ❌ la O de solid` 
+```
+class BookExporter {
+  export(book: Book, format: string) {
+    if (format === "pdf") {
+      // lógica PDF
+    } else if (format === "html") {
+      // lógica HTML
+    } else if (format === "epub") {
+      // lógica EPUB
+    }
+  }
+}
+
+```
+
+**¿Cuál es el problema?**
+Cada vez que agrego un nuevo formato, tengo que modificar la clase. Si hay un error, puede afectar todos los formatos. Se vuelve difícil de mantener.
+
+Nos saltamos el principio Open/Closed.
+` ✅Atención ✅: Ejemplo ✅ CON la O de solid`
+La idea es usar uno de los pilares de la programación para solucionar esto: el polimorfismo (o composición) para extender sin modificar.
+
+`📁 interfaces/Exporter.ts`
+
+En el ejemplo de los exportadores de libros, vamos a utilizar una interface para permitir que nuestro sistema acepte distintos tipos de exportadores sin tener que modificar el código existente.
+```
+import { Book } from "../models/Book";
+
+export interface Exporter {
+  export(book: Book): void;
+}
+
+```
+
+`📁 exporters/BookPDFExporter.ts`
+
+La palabra clave implements se usa cuando una clase quiere seguir un contrato definido por una interface.
+`implements` significa: “Esta clase promete tener todo lo que dice esta interface.
+```
+import { Book } from "../models/Book";
+import { Exporter } from "../interfaces/Exporter";
+
+export class BookPDFExporter implements Exporter {
+  export(book: Book) {
+    console.log(`Exporting "${book.title}" as PDF...`);
+  }
+}
+
+```
+
+a estas alturas es posible que te estes preguntando ¿ cuales es la diferencia entre extends e implements?
+| Característica                  | `extends`                          | `implements`                              |
+|-------------------------------|------------------------------------|-------------------------------------------|
+| ¿Qué hace?                    | Hereda de otra clase               | Implementa una interface                  |
+| ¿Hereda comportamiento?      | Sí, hereda métodos y propiedades   | No, solo obliga a tener ciertos métodos   |
+| ¿Qué hereda?                 | Código real (métodos, lógica)      | Solo la forma o estructura (firma)        |
+| ¿Puede usar múltiples?       | ❌ Solo una clase                  | ✅ Puede implementar múltiples interfaces |
+| ¿Para qué se usa?            | Reutilizar lógica y comportamiento | Garantizar estructura o contrato          |
+| ¿Con qué se usa?             | Con clases                         | Con interfaces                             |
+| Ejemplo                      | `class Dog extends Animal {}`      | `class Fish implements Swimmer {}`        |
+
+`extends` → “Copiame todo lo que tienes, quiero ser como tu (y modificarte un poco).”
+
+`implements` → “No me des tu código, solo deme qué necesito tener para ser compatible.”
+
+En este ejemplo la interface es el "pegamento" que conecta todo y hace que tenga esa base comun sobre la que abrir nuevas responsabilidades.
+
+`📁 exporters/BookHTMLExporter.ts`
+```
+import { Book } from "../models/Book";
+import { Exporter } from "../interfaces/Exporter";
+
+export class BookHTMLExporter implements Exporter {
+  export(book: Book) {
+    console.log(`Exporting "${book.title}" as HTML...`);
+  }
+}
+
+```
+
+`📁 controllers/BookController.ts`
+```
+import { Book } from "../models/Book";
+import { BookPDFExporter } from "../exporters/BookPDFExporter";
+import { BookHTMLExporter } from "../exporters/BookHTMLExporter";
+
+const book = new Book("Clean Code", "Robert C. Martin");
+
+const exporterPDF = new BookPDFExporter();
+exporterPDF.export(book);
+
+const exporterHTML = new BookHTMLExporter();
+exporterHTML.export(book);
+
+```
+¿Qué logramos?
+Las clases están cerradas para modificación 
+
+Puedes agregar BookEPUBExporter, BookMarkdownExporter, etc., sin tocar las anteriores 
+
+El código es más flexible, escalable y modular.
+En la práctica, el principio Open/Closed nos lleva a crear muchas clases adicionales, pero todas esas clases comunican la misma idea a través de una interface. La magia de este enfoque está en no modificar el código que ya existe, sino extenderlo mediante la creación de nuevas clases que implementan una interface común.
+Si no seguimos este principio, cada vez que querés agregar un nuevo tipo de exportador, tendrías que modificar la lógica de exportBook(). Eso trae varios problemas:
+
+Rompe código existente.
+
+Hace el código más propenso a errores (porque algo ya escrito podría dejar de funcionar con el cambio).
+
+Hace más difícil de mantener.
+
 
 
