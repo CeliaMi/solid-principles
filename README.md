@@ -75,7 +75,7 @@ Si yo no supiera de los principios SOLID podría acabar haciendo algo como esto:
   
 `❌Atención❌: Ejemplo SIN ❌ la S de solid, a continuación vamos a ver una clase que tiene demasiadas responsabilidades`   
 
-  ```
+  ```ts
 class Book {
   title: string;
   author: string;
@@ -114,7 +114,7 @@ Demasiados motivos para cambiar...no estamos siguiendo el primer principio y eso
  ` ✅Atención ✅: Ejemplo ✅ CON la S de solid, a continuación vamos a ver clases con una única responsabilidad`   
 
   
- ```
+ ```ts
 class Book {
   title: string;
   author: string;
@@ -161,7 +161,7 @@ Es decir: si mañana necesitás nuevas funcionalidades, deberías poder agregarl
 Sobre el ejemplo anterior de nuestro api de libros: ¿Qué pasa si mañana quiero exportar los libros no solo como PDF sino también como HTML o EPUB?
 
 `❌Atención❌: Ejemplo SIN ❌ la O de solid` 
-```
+```ts
 class BookExporter {
   export(book: Book, format: string) {
     if (format === "pdf") {
@@ -186,7 +186,7 @@ La idea es usar uno de los pilares de la programación para solucionar esto: el 
 `📁 interfaces/Exporter.ts`
 
 En el ejemplo de los exportadores de libros, vamos a utilizar una interface para permitir que nuestro sistema acepte distintos tipos de exportadores sin tener que modificar el código existente.
-```
+```ts
 import { Book } from "../models/Book";
 
 export interface Exporter {
@@ -199,7 +199,7 @@ export interface Exporter {
 
 La palabra clave implements se usa cuando una clase quiere seguir un contrato definido por una interface.
 `implements` significa: “Esta clase promete tener todo lo que dice esta interface.
-```
+```ts
 import { Book } from "../models/Book";
 import { Exporter } from "../interfaces/Exporter";
 
@@ -229,7 +229,7 @@ a estas alturas es posible que te estes preguntando ¿ cuales es la diferencia e
 En este ejemplo la interface es el "pegamento" que conecta todo y hace que tenga esa base comun sobre la que abrir nuevas responsabilidades.
 
 `📁 exporters/BookHTMLExporter.ts`
-```
+```ts
 import { Book } from "../models/Book";
 import { Exporter } from "../interfaces/Exporter";
 
@@ -242,7 +242,7 @@ export class BookHTMLExporter implements Exporter {
 ```
 
 `📁 controllers/BookController.ts`
-```
+```ts
 import { Book } from "../models/Book";
 import { BookPDFExporter } from "../exporters/BookPDFExporter";
 import { BookHTMLExporter } from "../exporters/BookHTMLExporter";
@@ -270,6 +270,117 @@ Rompe código existente.
 Hace el código más propenso a errores (porque algo ya escrito podría dejar de funcionar con el cambio).
 
 Hace más difícil de mantener.
+
+## **`L`** - **Principio de Sustitución de Liskov** 
+
+¿Qué significa que una subclase pueda sustituir a su clase base sin alterar el comportamiento esperado?
+
+El **Principio de Sustitución de Liskov (LSP)** nos dice que las subclases deben ser completamente intercambiables por sus clases base sin que se rompa la funcionalidad del sistema. En otras palabras, si una clase base define un comportamiento, **la subclase debe ser capaz de cumplir con las mismas expectativas sin modificar ese comportamiento**.
+
+Ejemplo en la vida real: Imagina que estás en una tienda y pides una camisa de una talla específica. La tienda debería poder ofrecerte la talla sin modificar sus condiciones. Si la tienda te da algo diferente, como una chaqueta en lugar de una camisa, no estarías recibiendo lo esperado.
+
+Ejemplo sobre el código: Siguiendo con nuestra aplicación de libros, supongamos que tenemos una clase base `Book` y creamos una subclase `Ebook`. El principio de Liskov nos asegura que si utilizamos `Ebook` en lugar de `Book`, todo debe seguir funcionando sin sorpresas. Si una subclase modifica la forma en que funciona un método, estamos violando el LSP.
+
+### **¿Cómo podría ser un mal ejemplo? (Sin LSP)**
+
+En este caso, si modificamos el comportamiento de `Book` en `Ebook`, podríamos crear un código que no cumpla con las expectativas del sistema.
+
+```ts
+class Book {
+  constructor(public title: string, public author: string) {}
+
+  displayInfo() {
+    console.log(`${this.title} by ${this.author}`);
+  }
+}
+
+class Ebook extends Book {
+  constructor(title: string, author: string, public fileSize: number) {
+    super(title, author);
+  }
+
+  // La subclase altera el comportamiento de la clase base
+  displayInfo() {
+    console.log(`Ebook: ${this.title} by ${this.author}, file size: ${this.fileSize}MB`);
+  }
+}
+
+function printBookInfo(book: Book) {
+  book.displayInfo();
+}
+
+const myBook = new Book("Clean Code", "Robert C. Martin");
+const myEbook = new Ebook("Clean Code", "Robert C. Martin", 2);
+
+printBookInfo(myBook);   // Expected output: "Clean Code by Robert C. Martin"
+printBookInfo(myEbook);  // Expected output: "Ebook: Clean Code by Robert C. Martin, file size: 2MB"
+```
+
+### **¿Cuál es el problema aquí?**
+
+- **`Ebook` cambia el comportamiento de `displayInfo()`**, algo que no esperamos en la subclase. Esto hace que el código que esperaba un `Book` normal podría no funcionar correctamente con un `Ebook`.
+- La función `printBookInfo()` que espera un `Book`, cuando le pasamos un `Ebook`, tiene un comportamiento inesperado debido a la modificación de la subclase.
+
+Esto se salta el principio de **Sustitución de Liskov**, ya que la subclase no se comporta como la clase base.
+
+---
+
+### **¿Cómo podemos corregir esto y aplicar LSP correctamente?**
+
+Para seguir el principio de Liskov, **las subclases deben extender las funcionalidades de la clase base sin modificar su comportamiento**. Esto significa que `Ebook` debe **respetar la lógica de `displayInfo()`**, pero podemos añadirle más características sin alterar el comportamiento original.
+
+### **Solución respetando LSP**
+
+```ts
+class Book {
+  constructor(public title: string, public author: string) {}
+
+  displayInfo() {
+    console.log(`${this.title} by ${this.author}`);
+  }
+}
+
+class Ebook extends Book {
+  constructor(title: string, author: string, public fileSize: number) {
+    super(title, author);
+  }
+
+  // La subclase ahora respeta el comportamiento de la clase base
+  displayInfo() {
+    super.displayInfo();  // Llamamos a la versión base
+    console.log(`File size: ${this.fileSize}MB`);
+  }
+}
+
+function printBookInfo(book: Book) {
+  book.displayInfo();
+}
+
+const myBook = new Book("Clean Code", "Robert C. Martin");
+const myEbook = new Ebook("Clean Code", "Robert C. Martin", 2);
+
+printBookInfo(myBook);   // Expected output: "Clean Code by Robert C. Martin"
+printBookInfo(myEbook);  // Expected output: "Clean Code by Robert C. Martin" and "File size: 2MB"
+```
+
+### **¿Qué logramos con esta corrección?**
+
+- **`Ebook` ahora extiende** el comportamiento de `Book` sin modificar la funcionalidad original de `displayInfo()`.
+- **La clase base `Book`** se comporta como se espera, incluso si es reemplazada por una subclase `Ebook`.
+- El código sigue funcionando como se esperaba en la función `printBookInfo()` sin romper nada.
+
+---
+
+- ** Liskov** nos asegura que las subclases pueden ser utilizadas en lugar de la clase base sin alterar el comportamiento del programa.
+- Las subclases **no deben cambiar la lógica** de los métodos heredados, sino que deben **extenderlos** de manera que el código base siga funcionando correctamente.
+- **Aplicar LSP** nos permite mantener un código **más predecible** y **evitar sorpresas** al usar subclases en el lugar de clases base, lo que mejora la **flexibilidad** y **escalabilidad** del sistema.
+
+Este principio nos da una base sólida para extender nuestras clases sin tener que preocuparnos de que se rompa el sistema cuando cambiamos la implementación de una clase base.
+
+¿choca esto con el pilar del polimorfismo?
+El polimorfismo permite que las subclases sobrescriban métodos, pero el principio de Liskov establece que cualquier método heredado que sea sobrescrito no debe modificar las expectativas del sistema. Esto significa que si un método es sobrescrito en una subclase, debe mantener el mismo comportamiento que se espera de la clase base, sin cambiar su firma ni sus expectativas.
+
+Por lo tanto, no hay un conflicto entre el polimorfismo y el principio de Liskov si las subclases sobrescriben los métodos de manera correcta, respetando las expectativas de la clase base.
 
 
 
