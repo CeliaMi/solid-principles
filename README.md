@@ -1,15 +1,35 @@
 # solid-principles
 
-Los principios SOLID son cinco reglas para escribir código limpio y bien estructurado enfocado en la programación orientada a objetos. 
+Los principios SOLID son cinco reglas **para escribir código limpio y bien estructurado** enfocado en la programación orientada a objetos. 
 Su objetivo es hacer que el software sea más fácil de entender, mantener y escalar. 
 
 ```
+💬 En pocas palabras:
  SOLID te ayuda a escribir código que no se rompa fácilmente y que sea más fácil de entender y modificar
 ```
 
-Cada una de las letras hace referencia a un principio
+Cada una de las letras hace referencia a un principio 1.`S` 2.`O` 3.`L` 4.`I` 5.`D`
 
-  _*aclaración🙋‍♀️:aunque se crearon pensando en la programación orientada a objetos también es posible aplicarlos en otros paradigmas como el funcional._
+  >_*aclaración🙋‍♀️:aunque se crearon pensando en la programación orientada a objetos también es posible aplicarlos en otros paradigmas como el funcional._
+
+Pero antes de todo preguntémonos… **¿qué es la Programación Orientada a Objetos?**
+```
+La Programación Orientada a Objetos (POO) es una forma de escribir programas que se basa en organizar el código en objetos.
+```
+
+Muy bien y...**¿Cómo organizo mi código con POO?** 👉 con clases.
+
+Cuando empiezo a escribir mi código, lo organizo a través de clases. Estas clases son como moldes que me permiten crear objetos y definir las acciones que pueden hacer (eso que llamamos métodos).
+
+Este es el nivel más básico👶:
+
+>👶Tengo clases,
+
+>👶Las clases pueden crear objetos,
+
+>👶Y esos objetos pueden hacer cosas.
+
+pero ¿ Qué pasa cuando tengo más de una clase? que pasa cuando tengo muchas acciones, a medida que mi code crece el programa se vuelve más y más grande, es importante organizarlo bien y tener un criterio del tamaño y las acciones de mis clases y la interacción de unas con otras, como esto es algo que muchas personas necesitan hacer,se crearón unos principios, 'los principios de la programación orientada a objetos' 
 
 
 ## **`S`** - **Principio de Responsabilidad Única (Single Responsibility Principle - SRP)**.
