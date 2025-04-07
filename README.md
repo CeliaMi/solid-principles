@@ -55,89 +55,104 @@ Así nacieron los principios de la programación orientada a objetos: los princi
 >
 >SOLID es el **"cómo escribir buen código con POO".**
 ---
+  <img src='./PILARES_VS_PRINCIPIOS.png'/>
 
+`Comenzamos con los principios SOLID`
+---
 
+## **`S`** - **Principio de Responsabilidad Única**.
 
-
-## **`S`** - **Principio de Responsabilidad Única (Single Responsibility Principle - SRP)**.
  
-    
-   Una clase debe tener **una sola razón para cambiar**. Es decir, cada clase debe hacer solo una cosa. cada clase debe dedicarse a una única cosa.
-    
-  Ejemplo Orquesta: cada músico toca un solo instrumento no varios, es su única responsabilidad.
-    
-  Ejemplo app calculadora: No combines la lógica de impresión con la lógica de cálculos en una misma clase.
+¿Qué significa que una clase tenga una “responsabilidad única”?
 
-  Ejemplo sobre el code:
+Significa que una clase debe encargarse de una sola cosa.En otras palabras: una clase debe tener un solo motivo para cambiar.
+Ejemplo en la vida real: en una orquesta cada músico toca un solo instrumento no varios, es su única responsabilidad.
+Ejemplo sobre el code: Vamos hacer nuestra clase Libro para nuestra app de libros
+
+Si mi app es de libros, la clase libros tendrá mucha responsabilidad, como organizo mi code?
+Si yo no supiera de los principios SOLID podría acabar haciendo algo como esto:
+
   
+`❌Atención❌: Ejemplo SIN ❌ la S de solid, a continuación vamos a ver una clase que tiene demasiadas responsabilidades`   
 
-  ```  
-❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌
-Atención: Ejemplo SIN la S de solid, a continuación vamos a ver una clase que tiene demasiadas responsabilidades
-  ```   
   ```
-  //❌ Clase->responsabilidad:representar al usuario, manejar la autenticación, manejar la actualización del perfil
+class Book {
+  title: string;
+  author: string;
 
-    class User {
-      constructor(public username: string, public password: string, public email: string) {}
-    
-      register() {
-        console.log(`Registrando usuario: ${this.username}`);
-      }
-    
-      login() {
-        console.log(`Autenticando usuario: ${this.username}`);
-      }
-    
-      updateProfile(email: string) {
-        this.email = email;
-        console.log(`Actualizando email de ${this.username} a ${this.email}`);
-      }
+    constructor(title: string, author: string) {
+      this.title = title;
+      this.author = author;
     }
-    
-    const user = new User("juanita123", "password123", "juanita@example.com");
-    user.register();
-    user.login();
-    user.updateProfile("nuevoemailjuanita@example.com");
- ```
   
-     ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
-      Atención: Ejemplo CON la S de solid, a continuación vamos a ver clases con una única responsabilidad
+    displayInfo() {
+      console.log(`${this.title} - ${this.author}`);
+    }
+  
+    saveToDatabase() {
+      // logic to save the book to a database
+    }
+  
+    exportAsPDF() {
+      // logic to export the book as a PDF
+    }
+}
+
+```
+
+¿Qué problema vemos aquí?
+La clase Libro está haciendo más de una cosa: tiene demasiadas responsabilidades
+
+
+> 1️⃣Representa los datos del libro + 2️⃣Muestra información en consola  + 3️⃣Guarda en la base de datos + 4️⃣Exporta como PDF 
+
+Si mañana cambiamos la forma de guardar libros, esta clase cambiaría. Si mañana cambiamos el formato del PDF, también cambiaría.
+Demasiados motivos para cambiar...no estamos siguiendo el primer principio y eso a lar larga nos traerá problemas.
+
+**¿Cómo lo solucionamos? Separando las responsabilidades** en clases distintas, es decir, siguiendo el primer principio.
+
+ ` ✅Atención ✅: Ejemplo ✅ CON la S de solid, a continuación vamos a ver clases con una única responsabilidad`   
+
+  
  ```
-      // ✅ Clase->responsabilidad: representa solo al usuario
-      class User {
-        constructor(public username: string, public password: string, public email: string) {}
-      }
-      
-      // ✅ Clase->responsabilidad:  manejar la autenticación
-      class AuthService {
-        login(user: User) {
-          console.log(`Autenticando usuario: ${user.username}`);
-        }
-      
-        register(user: User) {
-          console.log(`Registrando usuario: ${user.username}`);
-        }
-      }
-      
-      // ✅Clase->responsabilidad: manejar la actualización del perfil del usuario
-      class UserProfileService {
-        updateEmail(user: User, newEmail: string) {
-          user.email = newEmail;
-          console.log(`Email actualizado a: ${user.email}`);
-        }
-      }
-      
- 
-      const user = new User("juan123", "password123", "juan@example.com");
-      const authService = new AuthService();
-      const profileService = new UserProfileService();
-      
-      authService.register(user);
-      authService.login(user);
-      profileService.updateEmail(user, "nuevoemail@example.com");
+class Book {
+  title: string;
+  author: string;
+
+    constructor(title: string, author: string) {
+      this.title = title;
+      this.author = author;
+    }
+  }
+  
+  class BookPrinter {
+    displayInfo(book: Book) {
+      console.log(`${book.title} - ${book.author}`);
+    }
+  }
+  
+  class BookService {
+    save(book: Book) {
+      // logic to save to the database
+    }
+  }
+  
+  class BookPDFExporter {
+    export(book: Book) {
+      // logic to export as PDF
+    }
+  }
 
   ```
+
+Este code en un repositorio lo encontrarías ordenado por carpetas
+
+la clase Book: 📁 models/Book.ts
+
+la clase BookServices 📁 services/BookService.ts
+
+la clase BookPrinter 📁 utils/BookPrinter.ts
+
 
 
 
