@@ -277,6 +277,8 @@ Hace más difícil de mantener.
 
 El **Principio de Sustitución de Liskov (LSP)** nos dice que las subclases deben ser completamente intercambiables por sus clases base sin que se rompa la funcionalidad del sistema. En otras palabras, si una clase base define un comportamiento, **la subclase debe ser capaz de cumplir con las mismas expectativas sin modificar ese comportamiento**.
 
+Yo lo resumo como el principio que garantiza que **la herencia sea coherente**.
+
 Ejemplo en la vida real: Imagina que estás en una tienda y pides una camisa de una talla específica. La tienda debería poder ofrecerte la talla sin modificar sus condiciones. Si la tienda te da algo diferente, como una chaqueta en lugar de una camisa, no estarías recibiendo lo esperado.
 
 Ejemplo sobre el código: Siguiendo con nuestra aplicación de libros, supongamos que tenemos una clase base `Book` y creamos una subclase `Ebook`. El principio de Liskov nos asegura que si utilizamos `Ebook` en lugar de `Book`, todo debe seguir funcionando sin sorpresas. Si una subclase modifica la forma en que funciona un método, estamos violando el LSP.
