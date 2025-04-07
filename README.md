@@ -180,7 +180,9 @@ class BookExporter {
 Cada vez que agrego un nuevo formato, tengo que modificar la clase. Si hay un error, puede afectar todos los formatos. Se vuelve difícil de mantener.
 
 Nos saltamos el principio Open/Closed.
+
 ` ✅Atención ✅: Ejemplo ✅ CON la O de solid`
+
 La idea es usar uno de los pilares de la programación para solucionar esto: el polimorfismo (o composición) para extender sin modificar.
 
 `📁 interfaces/Exporter.ts`
@@ -283,7 +285,7 @@ Ejemplo en la vida real: Imagina que estás en una tienda y pides una camisa de 
 
 Ejemplo sobre el código: Siguiendo con nuestra aplicación de libros, supongamos que tenemos una clase base `Book` y creamos una subclase `Ebook`. El principio de Liskov nos asegura que si utilizamos `Ebook` en lugar de `Book`, todo debe seguir funcionando sin sorpresas. Si una subclase modifica la forma en que funciona un método, estamos violando el LSP.
 
-### **¿Cómo podría ser un mal ejemplo? (Sin LSP)**
+`❌Atención❌: Ejemplo SIN ❌ la L de solid` 
 
 En este caso, si modificamos el comportamiento de `Book` en `Ebook`, podríamos crear un código que no cumpla con las expectativas del sistema.
 
@@ -318,20 +320,18 @@ printBookInfo(myBook);   // Expected output: "Clean Code by Robert C. Martin"
 printBookInfo(myEbook);  // Expected output: "Ebook: Clean Code by Robert C. Martin, file size: 2MB"
 ```
 
-### **¿Cuál es el problema aquí?**
-
-- **`Ebook` cambia el comportamiento de `displayInfo()`**, algo que no esperamos en la subclase. Esto hace que el código que esperaba un `Book` normal podría no funcionar correctamente con un `Ebook`.
-- La función `printBookInfo()` que espera un `Book`, cuando le pasamos un `Ebook`, tiene un comportamiento inesperado debido a la modificación de la subclase.
+**¿Cuál es el problema aquí?**
+ **`Ebook` cambia el comportamiento de `displayInfo()`**, algo que no esperamos en la subclase. Esto hace que el código que esperaba un `Book` normal podría no funcionar correctamente con un `Ebook`.
+La función `printBookInfo()` que espera un `Book`, cuando le pasamos un `Ebook`, tiene un comportamiento inesperado debido a la modificación de la subclase.
 
 Esto se salta el principio de **Sustitución de Liskov**, ya que la subclase no se comporta como la clase base.
 
 ---
 
-### **¿Cómo podemos corregir esto y aplicar LSP correctamente?**
-
+**¿Cómo podemos corregir esto y aplicar LSP correctamente?**
 Para seguir el principio de Liskov, **las subclases deben extender las funcionalidades de la clase base sin modificar su comportamiento**. Esto significa que `Ebook` debe **respetar la lógica de `displayInfo()`**, pero podemos añadirle más características sin alterar el comportamiento original.
 
-### **Solución respetando LSP**
+`✅Atención✅: Ejemplo CON ✅ la L de solid` 
 
 ```ts
 class Book {
@@ -365,18 +365,15 @@ printBookInfo(myBook);   // Expected output: "Clean Code by Robert C. Martin"
 printBookInfo(myEbook);  // Expected output: "Clean Code by Robert C. Martin" and "File size: 2MB"
 ```
 
-### **¿Qué logramos con esta corrección?**
-
-- **`Ebook` ahora extiende** el comportamiento de `Book` sin modificar la funcionalidad original de `displayInfo()`.
-- **La clase base `Book`** se comporta como se espera, incluso si es reemplazada por una subclase `Ebook`.
-- El código sigue funcionando como se esperaba en la función `printBookInfo()` sin romper nada.
+ **¿Qué logramos con esta corrección?**
+**`Ebook` ahora extiende** el comportamiento de `Book` sin modificar la funcionalidad original de `displayInfo()`.
+**La clase base `Book`** se comporta como se espera, incluso si es reemplazada por una subclase `Ebook`.
+ El código sigue funcionando como se esperaba en la función `printBookInfo()` sin romper nada.
 
 ---
-
-- ** Liskov** nos asegura que las subclases pueden ser utilizadas en lugar de la clase base sin alterar el comportamiento del programa.
-- Las subclases **no deben cambiar la lógica** de los métodos heredados, sino que deben **extenderlos** de manera que el código base siga funcionando correctamente.
+** Liskov** nos asegura que las subclases pueden ser utilizadas en lugar de la clase base sin alterar el comportamiento del programa.
+ Las subclases **no deben cambiar la lógica** de los métodos heredados, sino que deben **extenderlos** de manera que el código base siga funcionando correctamente.
 - **Aplicar LSP** nos permite mantener un código **más predecible** y **evitar sorpresas** al usar subclases en el lugar de clases base, lo que mejora la **flexibilidad** y **escalabilidad** del sistema.
-
 Este principio nos da una base sólida para extender nuestras clases sin tener que preocuparnos de que se rompa el sistema cuando cambiamos la implementación de una clase base.
 
 ¿choca esto con el pilar del polimorfismo?
@@ -386,19 +383,14 @@ Por lo tanto, no hay un conflicto entre el polimorfismo y el principio de Liskov
 
 
 ## **`I`** - **Principio de Segregación de la Interfaz (ISP)**
-
-### ¿Qué significa este principio?
-
 ¿Alguna vez has tenido que usar una interfaz o clase que te daba un montón de métodos que nunca ibas a utilizar? Bueno, el **Principio de Segregación de la Interfaz** viene a salvarnos de eso. Este principio dice que **no deberíamos forzar a una clase a depender de métodos que no usa**.
 
 Consiste básicamente en **dividir las interfaces grandes en interfaces pequeñas y específicas**
 
 
-### ¿Por qué es un problema?
+¿Por qué es un problema? Imagina que tienes una clase que tiene que implementar un montón de métodos de una interfaz que nunca vas a usar. ¿Qué pasa? Estás escribiendo **código innecesario** que solo hace que tu clase sea más compleja de lo que debería. Es como tener un montón de ropa en tu armario que nunca usas, solo está ocupando espacio.
 
-Imagina que tienes una clase que tiene que implementar un montón de métodos de una interfaz que nunca vas a usar. ¿Qué pasa? Estás escribiendo **código innecesario** que solo hace que tu clase sea más compleja de lo que debería. Es como tener un montón de ropa en tu armario que nunca usas, solo está ocupando espacio.
-
-### Ejemplo sin aplicar ISP:
+`❌Atención❌: Ejemplo SIN ❌ la I de solid` 
 
 Supongamos que tienes una clase `BookExporter`, y esta clase maneja **todos los formatos de exportación** de libros, como PDF, HTML, EPUB, etc. A simple vista parece funcionar, pero si solo necesitas exportar un libro en un formato, esta clase todavía estará llena de métodos para los demás formatos que no usas.
 
@@ -427,6 +419,7 @@ class BookExporter {
 ¿Cómo lo solucionamos?
 La solución es bastante simple: dividir la interfaz en interfaces más pequeñas y específicas. Así, las clases solo implementan los métodos que realmente necesitan.
 
+`✅Atención✅: Ejemplo CON ✅ la I de solid` 
 ```ts
 // Exporter.ts - Interfaz para exportar como PDF
 export interface PDFExporter {
@@ -469,6 +462,76 @@ class BookPDFExporter implements PDFExporter {
 ¡Y listo! Ahora cada clase solo hace lo que tiene que hacer. Si un día queremos agregar otro formato, como Markdown, simplemente creamos una nueva interfaz para él y una clase que la implemente. No necesitamos tocar el código existente.
 
 **¿Qué ganamos con esto?** Código más limpio: Ya no tienes clases gigantes con métodos que no usas. Más flexibilidad: Si algún día quieres agregar un nuevo formato de exportación, lo haces fácilmente sin tocar el código que ya está funcionando. Mantenimiento fácil: Como las clases son más pequeñas y hacen una sola cosa, es mucho más fácil entenderlas y modificarlas.
+
+## **`D`** - **Principio de Inversión de Dependencias (DIP)**
+
+¿Alguna vez has oído hablar de depender de algo solo porque está cerca de ti o porque te resulta fácil de usar? 
+
+En lugar de depender de clases concretas, debemos depender de **abstracciones**. En otras palabras, el código de alto nivel no debe depender de clases de bajo nivel, sino de interfaces o clases abstractas. 
+
+**¿Qué significa esto?**Si una clase A depende de una clase B directamente, cualquier cambio en B afectará a A. Con el DIP, A depende de **una interfaz o clase abstracta**, y B es quien implementa esa interfaz. Esto te da más flexibilidad para cambiar la implementación de B sin afectar a A.
+
+
+
+Imagina que tenemos una clase `BookService` que depende de un `DatabaseService` para guardar los libros. Sin el DIP, se vería algo así:
+`❌Atención❌: Ejemplo SIN ❌ la D de solid`
+
+```ts
+class BookService {
+  private databaseService: DatabaseService;
+
+  constructor() {
+    this.databaseService = new DatabaseService(); // Clase concreta
+  }
+
+  save(book: Book) {
+    this.databaseService.save(book);
+  }
+}
+```
+Problema: Si mañana quiero cambiar la forma de guardar los libros (por ejemplo, a un sistema de archivos en lugar de una base de datos), tendríamos que modificar BookService.
+
+Con el DIP lo hacemos diferente, usando una interfaz:
+
+
+`✅Atención✅: Ejemplo CON ✅ la D de solid`
+
+```ts
+interface StorageService {
+  save(book: Book): void;
+}
+
+class DatabaseService implements StorageService {
+  save(book: Book) {
+    // lógica para guardar en la base de datos
+  }
+}
+
+class FileService implements StorageService {
+  save(book: Book) {
+    // lógica para guardar en el sistema de archivos
+  }
+}
+
+class BookService {
+  private storageService: StorageService;
+
+  constructor(storageService: StorageService) {
+    this.storageService = storageService;
+  }
+
+  save(book: Book) {
+    this.storageService.save(book);
+  }
+}
+
+```
+¿Qué conseguimos con esto? BookService ahora no depende de una implementación concreta (DatabaseService o FileService), sino de una abstracción (StorageService).
+Si quiero cambiar la forma de almacenar los libros, solo cambio la implementación de StorageService sin tocar BookService. ¡Todo se mantiene mucho más flexible!
+
+Entonces, el DIP nos permite hacer que nuestro código sea más flexible y menos propenso a romperse cuando cambiamos algo en las implementaciones de bajo nivel.
+
+Así que, en resumen: depende de abstracciones, no de implementaciones concretas. 
 
 
 
