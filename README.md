@@ -385,4 +385,90 @@ El polimorfismo permite que las subclases sobrescriban métodos, pero el princip
 Por lo tanto, no hay un conflicto entre el polimorfismo y el principio de Liskov si las subclases sobrescriben los métodos de manera correcta, respetando las expectativas de la clase base.
 
 
+## **`I`** - **Principio de Segregación de la Interfaz (ISP)**
+
+### ¿Qué significa este principio?
+
+¿Alguna vez has tenido que usar una interfaz o clase que te daba un montón de métodos que nunca ibas a utilizar? Bueno, el **Principio de Segregación de la Interfaz** viene a salvarnos de eso. Este principio dice que **no deberíamos forzar a una clase a depender de métodos que no usa**.
+
+Consiste básicamente en **dividir las interfaces grandes en interfaces pequeñas y específicas**
+
+
+### ¿Por qué es un problema?
+
+Imagina que tienes una clase que tiene que implementar un montón de métodos de una interfaz que nunca vas a usar. ¿Qué pasa? Estás escribiendo **código innecesario** que solo hace que tu clase sea más compleja de lo que debería. Es como tener un montón de ropa en tu armario que nunca usas, solo está ocupando espacio.
+
+### Ejemplo sin aplicar ISP:
+
+Supongamos que tienes una clase `BookExporter`, y esta clase maneja **todos los formatos de exportación** de libros, como PDF, HTML, EPUB, etc. A simple vista parece funcionar, pero si solo necesitas exportar un libro en un formato, esta clase todavía estará llena de métodos para los demás formatos que no usas.
+
+```ts
+class BookExporter {
+  exportAsPDF(book: Book) {
+    console.log(`Exporting "${book.title}" as PDF...`);
+  }
+
+  exportAsHTML(book: Book) {
+    console.log(`Exporting "${book.title}" as HTML...`);
+  }
+
+  exportAsEPUB(book: Book) {
+    console.log(`Exporting "${book.title}" as EPUB...`);
+  }
+
+  exportAsMarkdown(book: Book) {
+    console.log(`Exporting "${book.title}" as Markdown...`);
+  }
+}
+
+```
+
+¿Ves el problema? Si solo necesitamos exportar en PDF, esta clase tiene código inútil para los otros formatos. 
+¿Cómo lo solucionamos?
+La solución es bastante simple: dividir la interfaz en interfaces más pequeñas y específicas. Así, las clases solo implementan los métodos que realmente necesitan.
+
+```ts
+// Exporter.ts - Interfaz para exportar como PDF
+export interface PDFExporter {
+  exportAsPDF(book: Book): void;
+}
+
+// Exporter.ts - Interfaz para exportar como HTML
+export interface HTMLExporter {
+  exportAsHTML(book: Book): void;
+}
+
+// Exporter.ts - Interfaz para exportar como EPUB
+export interface EPUBExporter {
+  exportAsEPUB(book: Book): void;
+}
+
+```
+Ahora, tenemos interfaces separadas para cada tipo de exportación, y las clases solo implementan lo que necesitan.
+
+```ts
+class BookPDFExporter implements PDFExporter {
+   exportAsPDF(book: Book) {
+     console.log(`Exporting "${book.title}" as PDF...`);
+   }
+ }
+ 
+ class BookHTMLExporter implements HTMLExporter {
+   exportAsHTML(book: Book) {
+     console.log(`Exporting "${book.title}" as HTML...`);
+   }
+ }
+ 
+ class BookEPUBExporter implements EPUBExporter {
+   exportAsEPUB(book: Book) {
+     console.log(`Exporting "${book.title}" as EPUB...`);
+   }
+ }
+
+```
+¡Y listo! Ahora cada clase solo hace lo que tiene que hacer. Si un día queremos agregar otro formato, como Markdown, simplemente creamos una nueva interfaz para él y una clase que la implemente. No necesitamos tocar el código existente.
+
+**¿Qué ganamos con esto?** Código más limpio: Ya no tienes clases gigantes con métodos que no usas. Más flexibilidad: Si algún día quieres agregar un nuevo formato de exportación, lo haces fácilmente sin tocar el código que ya está funcionando. Mantenimiento fácil: Como las clases son más pequeñas y hacen una sola cosa, es mucho más fácil entenderlas y modificarlas.
+
+
 
